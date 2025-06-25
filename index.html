@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Disponibilités par Heure et par Jour (Jours regroupés)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="disponibilitesChart" width="1000" height="500"></canvas>
+
+    <script>
+        const data = [
+            {
+                nom: 'x1',
+                prenom: 'x1',
+                horaires: [
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    [],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Vendredi', 'Samedi']
+                ]
+            },
+            {
+                nom: 'x2',
+                prenom: 'x2',
+                horaires: [
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+                ]
+            },
+            {
+                nom: 'x3',
+                prenom: 'x3',
+                horaires: [
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Vendredi', 'Samedi'],
+                    ['Vendredi', 'Samedi'],
+                    ['Vendredi', 'Samedi'],
+                    ['Vendredi', 'Samedi']
+                ]
+            },
+            {
+                nom: 'x4',
+                prenom: 'x4',
+                horaires: [
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    [],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche'],
+                    ['Samedi', 'Dimanche']
+                ]
+            }
+        ];
+
+        const heures = ['13h-14h', '14h-15h', '15h-16h', '16h-17h', '17h-18h', '18h-19h', '19h-20h', '20h-21h', '21h-22h', '22h-23h', '23h-00h'];
+        const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+        const jourIndices = {
+            'Lundi': 0,
+            'Mardi': 1,
+            'Mercredi': 2,
+            'Jeudi': 3,
+            'Vendredi': 4,
+            'Samedi': 5,
+            'Dimanche': 6
+        };
+
+        const disponibilites = {};
+        jours.forEach(jour => {
+            disponibilites[jour] = new Array(heures.length).fill(0);
+        });
+
+        data.forEach(personne => {
+            personne.horaires.forEach((horaire, index) => {
+                horaire.forEach(jour => {
+                    disponibilites[jour][index]++;
+                });
+            });
+        });
+
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, index) => val === b[index]);
+        }
+
+        function formatGroup(group) {
+            const indices = group.map(jour => jourIndices[jour]).sort((a, b) => a - b);
+            const joursOrdonnes = indices.map(i => jours[i]);
+
+            let result = '';
+            if (indices.length >= 2) {
+                let consecutifs = true;
+                for (let i = 0; i < indices.length - 1; i++) {
+                    if (indices[i + 1] !== indices[i] + 1) {
+                        consecutifs = false;
+                        break;
+                    }
+                }
+                if (consecutifs) {
+                    result = `De ${joursOrdonnes[0]} à ${joursOrdonnes[joursOrdonnes.length - 1]}`;
+                } else {
+                    result = joursOrdonnes.join(' et ');
+                }
+            } else {
+                result = joursOrdonnes.join(' et ');
+            }
+            return result;
+        }
+
+        const courbes = [];
+        const dejaRegroupe = [];
+
+        jours.forEach(jour => {
+            if (dejaRegroupe.includes(jour)) return;
+
+            let groupe = [jour];
+
+            jours.forEach(autreJour => {
+                if (jour !== autreJour && arraysEqual(disponibilites[jour], disponibilites[autreJour])) {
+                    groupe.push(autreJour);
+                    dejaRegroupe.push(autreJour);
+                }
+            });
+
+            courbes.push({
+                label: formatGroup(groupe),
+                data: disponibilites[jour]
+            });
+        });
+
+        const palette = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'cyan', 'brown', 'grey'];
+        const datasets = courbes.map((courbe, index) => ({
+            label: courbe.label,
+            borderColor: palette[index % palette.length],
+            data: courbe.data,
+            fill: false
+        }));
+
+        const maxValue = Math.max(...datasets.flatMap(d => d.data));
+        const yAxisMax = maxValue + 1;
+
+        const ctx = document.getElementById('disponibilitesChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: heures,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Nombre de personnes disponibles par heure et par jour (Jours regroupés)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: yAxisMax,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
